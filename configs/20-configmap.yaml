@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: msdemo-configmap
+  namespace: ms-demo
+data:
+  application-msdemo.yml: |
+    spring:
+      config:
+        activate:
+          on-profile: msdemo
+    server:
+      port: 8085

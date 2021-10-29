@@ -1,0 +1,46 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: msdemo
+  namespace: ms-demo
+  labels:
+    app: msdemo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: msdemo
+  template:
+    metadata:
+      labels:
+        app: msdemo
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: msdemo
+          image: docker.io/quocphan/msdemo:latest
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu: 1
+              memory: 1024Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+          env:
+            - name: JAVA_OPTS
+              value: -XshowSettings:vm -Dspring.config.additional-location=/opt/app/msdemo/config/ -Dspring.profiles.active=msdemo
+          securityContext:
+            privileged: false
+          ports:
+            - containerPort: 8085
+              protocol: TCP
+          volumeMounts:
+            - name: volume-msdemo-configmap
+              mountPath: /opt/app/msdemo/config
+      volumes:
+        - name: volume-msdemo-configmap
+          configMap:
+            name: msdemo-configmap
+            defaultMode: 420
+      dnsPolicy: ClusterFirst
